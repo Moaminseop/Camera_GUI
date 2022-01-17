@@ -33,6 +33,7 @@ class MyApp(QWidget):
         super().__init__()
         self.setAcceptDrops(True)
         self.titleBar()
+        self.sideBar()
         self.imageContent()
         self.interfaceContent()
         self.initUI()
@@ -40,10 +41,15 @@ class MyApp(QWidget):
         self.filename = None
         self.tmp = None
 
+
+
     def loadImage(self):
         self.filename = QFileDialog.getOpenFileName(filter="Image (*.*) ")[0]
-        self.image = cv2.imread(self.filename)
-        self.setPhoto(self.image)
+        # getOpenFileName은 취소를 눌렀을 때 빈 QString을 반환한다. 
+        # 이때 이 QString은 거짓으로 간주되므로 밑의 if문을 통해 실제로 값이 반환되었을 때에만 함수가 실행되도록 한다.
+        if self.filename :
+            self.image = cv2.imread(self.filename)
+            self.setPhoto(self.image)
 
     def setPhoto(self, image):
         self.tmp = image
@@ -52,29 +58,23 @@ class MyApp(QWidget):
         image = QImage(frame, frame.shape[1], frame.shape[0], frame.strides[0], QImage.Format_RGB888)
         self.imageLable.setPixmap(QtGui.QPixmap.fromImage(image))
 
-#     def mousePressEvent(self, event): 
-#         self.offset = event.pos() 
-    
-#     def mouseMoveEvent(self, event): 
-#         x = event.globalX() 
-#         y = event.globalY() 
-#         x_w = self.offset.x() 
-#         y_w = self.offset.y() 
-#         self.move(x-x_w, y-y_w)
+# 마우스를 통해 창을 이동할 수 있게 만드는 함수들
     def mousePressEvent(self, event):
         if event.button()==Qt.LeftButton:
             self.m_flag=True
-            self.m_Position=event.globalPos()-self.pos() #Get the position of the mouse relative to the window
+            self.m_Position=event.globalPos()-self.pos()
             event.accept()
             
     def mouseMoveEvent(self, QMouseEvent):
         if Qt.LeftButton and self.m_flag:  
-            self.move(QMouseEvent.globalPos()-self.m_Position)#Change window position
+            self.move(QMouseEvent.globalPos()-self.m_Position)
             QMouseEvent.accept()
             
     def mouseReleaseEvent(self, QMouseEvent):
         self.m_flag=False
 
+
+# 초기 ui설정
     def initUI(self):
         self.setWindowTitle('Camver')
         self.resize(1180, 900)
@@ -83,6 +83,8 @@ class MyApp(QWidget):
                             background-color : rgb(40, 44, 52);
                             """)
 
+
+# titleBar 설정
     def titleBar(self):
         self.app_label = QLabel('Camver', self)
 
@@ -166,6 +168,90 @@ class MyApp(QWidget):
         self.titleHBox.addWidget(self.btn_max)
         self.titleHBox.addWidget(self.btn_close)
 
+    def sideBar(self):
+        self.btnMenu = QPushButton(self)
+        self.btnMenu.setIcon(QIcon('./image/icon/menu.png'))
+        self.btnMenu.setIconSize(QSize(45, 45))
+        self.btnMenu.setStyleSheet(
+            '''
+            QPushButton{ 
+                background-color : rgb(33, 37, 43); 
+                border : 0px; 
+                border-radius : 3px;
+                margin-top : 10px; }
+            QPushButton::hover { background-color : #ffffff }
+            ''')
+
+        self.btnResortion = QPushButton(self)
+        self.btnResortion.setIcon(QIcon('./image/icon/resortion.png'))
+        self.btnResortion.setIconSize(QSize(45, 45))
+        self.btnResortion.setStyleSheet(
+            '''
+            QPushButton{ 
+                background-color : rgb(33, 37, 43); 
+                border : 0px; 
+                border-radius : 3px;
+                margin-top : 10px; }
+            QPushButton::hover { background-color : #ffffff }
+            ''')
+
+        self.btnEdge = QPushButton(self)
+        self.btnEdge.setIcon(QIcon('./image/icon/edge.png'))
+        self.btnEdge.setIconSize(QSize(45, 45))
+        self.btnEdge.setStyleSheet(
+            '''
+            QPushButton{ 
+                background-color : rgb(33, 37, 43); 
+                border : 0px; 
+                border-radius : 3px;
+                margin-top : 10px; }
+            QPushButton::hover { background-color : #ffffff }
+            ''')
+
+        self.btnVignet = QPushButton(self)
+        self.btnVignet.setIcon(QIcon('./image/icon/vignetting.png'))
+        self.btnVignet.setIconSize(QSize(45, 45))
+        self.btnVignet.setStyleSheet(
+            '''
+            QPushButton{ 
+                background-color : rgb(33, 37, 43); 
+                border : 0px; 
+                border-radius : 3px;
+                margin-top : 10px; }
+            QPushButton::hover { background-color : #ffffff }
+            ''')
+        
+        self.btnWhite = QPushButton(self)
+        self.btnWhite.setIcon(QIcon('./image/icon/whiteBalance.png'))
+        self.btnWhite.setIconSize(QSize(45, 45))
+        self.btnWhite.setStyleSheet(
+            '''
+            QPushButton{ 
+                background-color : rgb(33, 37, 43); 
+                border : 0px; 
+                border-radius : 3px;
+                margin-top : 10px; }
+            QPushButton::hover { background-color : #ffffff }
+            ''')
+
+        self.sideFrame = QFrame(self)
+        self.sideFrame.setGeometry(0, 50, 60, 850)
+        self.sideFrame.setStyleSheet(
+            ''' 
+            QWidget{ 
+                background-color : rgb(33, 37, 43); }
+            ''')
+
+        self.sideVBox = QVBoxLayout(self.sideFrame)
+        self.sideVBox.addWidget(self.btnMenu)
+        self.sideVBox.addWidget(self.btnResortion)
+        self.sideVBox.addWidget(self.btnEdge)
+        self.sideVBox.addWidget(self.btnVignet)
+        self.sideVBox.addWidget(self.btnWhite)
+        self.sideVBox.addStretch(1)
+
+
+# mainContent의 이미지를 받아들이는 공간
     def imageContent(self):
         self.setAcceptDrops(True)
         self.imageLable = QLabel(self)
@@ -187,8 +273,6 @@ class MyApp(QWidget):
         self.fileOpenBtn = QPushButton('SELECT IMAGE', self)
         self.fileOpenBtn.setFont(QFont('Segoe UI', 12))
         self.fileOpenBtn.clicked.connect(self.loadImage)
-        #self.fileOpenBtn.setGeometry(820, 365, 150, 38)
-        #self.fileOpenBtn.setFixedSize(QtCore.QSize(150, 38))
         self.fileOpenBtn.setMaximumWidth(250)
         self.fileOpenBtn.setStyleSheet(
             """
@@ -213,10 +297,9 @@ class MyApp(QWidget):
         
         self.contentVBox = QVBoxLayout(self.contentFrame)
         self.contentVBox.addWidget(self.imageLable)
-        self.contentVBox.addWidget(self.fileOpenBtn, alignment=QtCore.Qt.AlignHCenter)
-        #self.contentVBox.setAlignment(Qt.AlignCenter)
+        self.contentVBox.addWidget(self.fileOpenBtn, alignment=QtCore.Qt.AlignHCenter) # AlignHCenter를 통해 fileOpenBtn을 정렬
 
-
+# mainContent의 interface 메뉴
     def interfaceContent(self):
         self.resolutionCBox = QCheckBox('Resolution', self)
         self.resolutionCBox.setFont(QFont('Segoe UI', 12))
@@ -226,6 +309,7 @@ class MyApp(QWidget):
                 width : 30px;
                 height : 30px;
                 font-size : 22px;
+                color : white;
             }
             """
         )
@@ -238,6 +322,7 @@ class MyApp(QWidget):
                 width : 30px;
                 height : 30px;
                 font-size : 22px;
+                color : white;
             }
             """
         )
@@ -250,6 +335,7 @@ class MyApp(QWidget):
                 width : 30px;
                 height : 30px;
                 font-size : 22px;
+                color : white;
             }
             """
         )
@@ -262,6 +348,7 @@ class MyApp(QWidget):
                 width : 30px;
                 height : 30px;
                 font-size : 22px;
+                color : white;
             }
             """
         )
