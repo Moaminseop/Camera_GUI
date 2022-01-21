@@ -1,0 +1,85 @@
+
+Viewer에서 사용했던 함수들
+   # def __init__(self, parent=None):
+    #     super().__init__(QtWidgets.QGraphicsScene(), parent)
+    #     self.pixmap_item = self.scene().addPixmap(QtGui.QPixmap()) #scene은 내장함수
+    #     self.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft)
+    #     self.setBackgroundRole(QtGui.QPalette.Dark)
+    #     self.setDragMode(QtWidgets.QGraphicsView.RubberBandDrag)
+    #     self.rubberBandChanged.connect(self.onRubberBandChanged)
+
+        
+    #     self.rect_item = QGraphicsRectItem(QRectF(), self.pixmap_item)
+    #     self.rect_item.setPen(QPen(QColor(0, 255, 0), 2, Qt.SolidLine))
+    #     self.last_rect = QtCore.QPointF()
+
+
+    #     #외부에서 좌표를 입력받는 라벨을 설정
+    #     x, y = 0, 0
+    #     self.initPos = "x:{0}, y:{1}".format(x, y)
+
+    #     self.startLabel = QLineEdit(self.initPos, self)
+    #     self.endLabel = QLineEdit(self.initPos, self)
+    #     self.setMouseTracking(True)
+        
+    # def setPixmap(self, pixmap):
+    #     self.pixmap_item.setPixmap(pixmap)
+
+    
+    # @QtCore.pyqtSlot(QtCore.QRect, QtCore.QPointF, QtCore.QPointF)
+    # def onRubberBandChanged(self, rubberBandRect, fromScenePoint, toScenePoint):
+    #     if rubberBandRect.isNull():
+    #         pixmap = self.pixmap_item.pixmap()
+    #         rect = self.pixmap_item.mapFromScene(self.last_rect).boundingRect().toRect() # 좌표를 입력받는
+    #         if not rect.intersected(pixmap.rect()).isNull():
+    #             r = QRectF(fromScenePoint, toScenePoint).normalized()
+    #             r = self.rect_item.mapFromScene(r).boundingRect()
+    #             self.rect_item.setRect(r)
+    #         self.last_rect = QtCore.QRectF()
+    #         r = QRectF(fromScenePoint, toScenePoint).normalized()
+    #         r = self.rect_item.mapFromScene(r).boundingRect()
+    #         self.rect_item.setRect(r)
+            
+    #     else:
+    #         self.last_rect = QtCore.QRectF(fromScenePoint, toScenePoint)
+
+    #         r = QRectF(fromScenePoint, toScenePoint).normalized()
+    #         r = self.rect_item.mapFromScene(r).boundingRect()
+    #         self.rect_item.setRect(r)
+
+    #         #입력받고싶은 좌표를 함수 내부에서 설정 
+    #         self.startXais = fromScenePoint.x()
+    #         self.startYais = fromScenePoint.y()
+    #         self.endXais = toScenePoint.x()
+    #         self.endYais = toScenePoint.y()
+
+    #         startPos = "x:{0: .0f}, y:{1: .0f}".format(self.startXais, self.startYais)
+    #         endPos = "x:{0: .0f}, y:{1: .0f}".format(self.endXais, self.endYais)
+    #         self.startLabel.setText(startPos)
+    #         self.endLabel.setText(endPos)
+    
+    # def draw_rect(self):
+    #     r = QRectF(self.pi, self.pf).normalized()
+    #     r = self.rect_item.mapFromScene(r).boundingRect()
+    #     self.rect_item.setRect(r)
+    # def mousePressEvent(self, event):
+    #     self.xi = event.x()
+    #     self.yi = event.y()
+
+    # def mouseMoveEvent(self, event):
+    #     self.xf = event.x()
+    #     self.yf = event.y()
+    #     self.draw_rect()
+
+
+    # def mouseReleaseEvent(self, event):
+    #     self.xf = event.x()
+    #     self.yf = event.y()
+    #     self.draw_rect()
+
+    # def draw_rect(self):
+    #     # self.scene().removeItem(self.pixmap_item)
+    #     # self.scene().addItem(self.pixmap_item)
+
+    #     self.scene().addRect(self.xi, self.yi, self.xf-self.xi, self.yf-self.yi, pen=QPen(QColor(0, 255, 0), 2,
+    #                         Qt.SolidLine), brush=QBrush(QColor(0, 255, 0, 40)))
