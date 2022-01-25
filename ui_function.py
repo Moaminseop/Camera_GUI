@@ -15,23 +15,36 @@ class Viewer(QtWidgets.QGraphicsView): #뷰어의 역할을 해주는 것, 그�
         self.rect_item = QGraphicsRectItem(QRectF(), self.pixmap_item)
         self.rect_item.setPen(QPen(QColor(0, 255, 0), 3, Qt.SolidLine))
 
+        self.h = 0
+        self.w = 0
+
         #외부에서 좌표를 입력받는 라벨을 설정
-        x, y = 0, 0
-        self.initPos = "x:{0}, y:{1}".format(x, y)
+        # x, y = 0, 0
+        # self.initPos = "x:{0}, y:{1}".format(x, y)
 
-        self.startLabel = QLineEdit(self.initPos, self)
-        self.endLabel = QLineEdit(self.initPos, self)
+        # self.startLabel = QLineEdit(self.initPos, self)
+        # self.endLabel = QLineEdit(self.initPos, self)
 
-    def setPixmap(self, pixmap): # 클래스 내부에서 외부 호출을 통해 이미지를 받는 함수
+        #이미지가 불려왔는지 체크하는 변수
+        self.imageCheck = 0
+
+    # 클래스 내부에서 외부 호출을 통해 이미지를 받는 함수
+    def setPixmap(self, pixmap): 
         self.pixmap_item.setPixmap(pixmap)
+        self.imageCheck = 1
+
+    # 클래스 내부에서 외부 호출을 통해 이미지 크기를 받는 함수
+    def getImageSize(self, imageSize):
+        self.h = imageSize[0]
+        self.w = imageSize[1]
 
     def mousePressEvent(self, event):
         self.pi = self.mapToScene(event.pos())
         super().mousePressEvent(event)
-        self.startXais = event.x()
-        self.startYais = event.y()
-        startPos = "x:{0: .0f}, y:{1: .0f}".format(self.startXais, self.startYais)
-        self.startLabel.setText(startPos)
+        # self.startXais = event.x()
+        # self.startYais = event.y()
+        # startPos = "x:{0: .0f}, y:{1: .0f}".format(self.startXais, self.startYais)
+        # self.startLabel.setText(startPos)
 
     def mouseMoveEvent(self, event):
         pf = self.mapToScene(event.pos())
@@ -42,33 +55,50 @@ class Viewer(QtWidgets.QGraphicsView): #뷰어의 역할을 해주는 것, 그�
 
     def mouseReleaseEvent(self, event):
         pf = self.mapToScene(event.pos())
-        self.endXais = self.pf.x()
-        self.endYais = self.pf.y()
-        endPos = "x:{0: .0f}, y:{1: .0f}".format(self.endXais, self.endYais)
-        self.endLabel.setText(endPos)
         if (self.pi - pf).manhattanLength() > QApplication.startDragDistance():
             self.pf = pf
             self.draw_rect()
+            # self.endXais = self.pf.x()
+            # self.endYais = self.pf.y()
+            # endPos = "x:{0: .0f}, y:{1: .0f}".format(self.endXais, self.endYais)
+            # self.endLabel.setText(endPos)
+
         super().mouseReleaseEvent(event)
 
     def draw_rect(self):
-        xais = self.pf.x()
-        yais = self.pf.y()
 
-        # 박스가 - 좌표로 가는것을 막는 예외처리
-        if int(self.pf.x()) <= 0:
-            self.pf = QPointF(0, yais)
+        Xais = self.pf.x()
+        Yais = self.pf.y()
 
-        if int(self.pf.y()) <= 0:
-            self.pf = QPointF(xais, 0)
+        if self.imageCheck :
+            # 박스가 - 좌표로 가는것을 막는 예외처리
+            if int(self.pf.x()) <= 0:
+                self.pf = QPointF(0, Yais)
 
-        if int(self.pf.x()) <= 0 and int(self.pf.y()) <= 0:
-            self.pf = QPointF(0, 0)
+            if int(self.pf.y()) <= 0:
+                self.pf = QPointF(Xais, 0)
 
-        r = QRectF(self.pi, self.pf).normalized()
-        r = self.rect_item.mapFromScene(r).boundingRect()
-        self.rect_item.setRect(r)
+            if int(self.pf.x()) <= 0 and int(self.pf.y()) <= 0:
+                self.pf = QPointF(0, 0)
 
+            if int(self.pf.x()) >= self.w:
+                self.pf = QPointF(self.w, Yais)
+
+            if int(self.pf.y()) >= self.h:
+                self.pf = QPointF(Xais, self.h)
+
+            if int(self.pf.x()) >= self.w and int(self.pf.y()) >= self.h :
+                self.pf = QPointF(self.w, self.h)
+
+            if int(self.pf.y()) >= self.h and int(self.pf.x()) <= 0:
+                self.pf = QPointF(0, self.h)
+
+            if int(self.pf.x()) >= self.w and int(self.pf.y()) <= 0:
+                self.pf = QPointF(self.w, 0)
+
+            r = QRectF(self.pi, self.pf).normalized()
+            r = self.rect_item.mapFromScene(r).boundingRect()
+            self.rect_item.setRect(r)
 
 
 

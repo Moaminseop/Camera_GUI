@@ -100,7 +100,7 @@ class ResFuncThread(QThread):
 
         # 계산된 countedx와 ROI를 그림에 표시합니다.
         for i in range(len(start)):
-            cv2.rectangle(img, start[i], end[i], (0, 255, 0), thickness = 2)
+            cv2.rectangle(img, start[i], end[i], (0, 255, 0), thickness = 3)
             if (direction[i] == 1) or (direction[i] == 2):
                 for y in range(start[i][1], end[i][1]):
                     img[y, countedlimit[i]] = 255,0,0
@@ -111,13 +111,13 @@ class ResFuncThread(QThread):
                     img[int((start[i][1] + end[i][1])/2), x] = 0,255,0
 
         # cv.imshow(imgAddress, img)
-        cv2.imwrite("./data/resresult.png", img)
+        # cv2.imwrite("./data/resresult.png", img)
 
         pf = 0
-        for i in range(len(result)-1):
-            pf = result[i] and result[i+1]
-
-        return pf
+        for i in range(len(result)):
+            pf = result[i]
+            
+        return img, pf
 
 
 
@@ -290,9 +290,13 @@ class VignetFuncThread(QThread):
         #self.ld.endAnimation()
         if(judgment >= 1):
             print("비네팅이 존재하여 수정 하여 저장하였습니다.")
-            cv2.imwrite("./data/vignette_result.png", im) #저장하기
+            pf = 0
+            #cv2.imwrite("./data/vignette_result.png", im) #저장하기
         else :
             print("비네팅이 없습니다.")
+            pf = 1
+        
+        return im, pf
 
 class EdgeFuncThread(QThread):
     def __init__(self, parent):
@@ -339,13 +343,16 @@ class EdgeFuncThread(QThread):
         for i in range (0,5):
             if(countedline[i] > SET_VALUE[i]): 
                 passFail = "Pass"
+                pf = 1
+
             else:
                 passFail = "Fail"
+                pf = 0
+
         # 계산된 countedx와 ROI를 그림에 표시합니다.
             cv2.rectangle(img, ROI_X[i], ROI_Y[i], (0, 0, 255), thickness = 2)
             cv2.putText(img, str(countedline[i]), ROI_X[i], cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
             cv2.putText(img, passFail, (ROI_X[i][0],ROI_Y[i][1]+21), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
         
 
-        cv2.imshow(imgAddress, img)
-        cv2.imwrite('result'+imgAddress, img)
+        return img, pf
